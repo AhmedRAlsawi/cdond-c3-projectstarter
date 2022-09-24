@@ -197,13 +197,27 @@ jobs:
           at: ~/
       - run:
           name: Configure server
+          # working_directory: ./.circleci/ansible
           command: |
-            cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - project/backend
+            pwd
+            ls -la
+            pip install awscli
+            aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:project,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text >> inventory
+            cat inventory
+            printenv
+            ansible-playbook -i inventory configure-server.yml
+      # - run:
+      #     name: Configure server
+      #     command: |
+      #       cd .circleci/ansible
+      #       ansible-playbook -i inventory.txt configure-server.yml
+      # - persist_to_workspace:
+      #     root: ~/
+      #     paths:
+      #       - project/backend
 
       # - destroy_environment:
       #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
