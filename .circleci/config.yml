@@ -152,6 +152,10 @@ jobs:
       - checkout
       - run: yum install -y tar gzip
       - run:
+          name: AWS bucket
+          command: |
+            aws s3 ls
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
