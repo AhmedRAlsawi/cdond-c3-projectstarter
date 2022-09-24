@@ -9,6 +9,7 @@ log.txt
 .vscode/
 npm-debug.log*
 *.pem
+*.csv
 
 .idea/
 .ionic/
