@@ -67,7 +67,7 @@ jobs:
             cd backend
             npm install
             npm run build
-      
+
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -179,12 +179,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - run: 
-          name: Show Ip List
-          command: |
-            cd ~/project/.circleci/ansible
-            pwd && ls
-            cat ~/project/.circleci/ansible/inventory.txt
+
       # - destroy_environment:
       #     workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -201,6 +196,12 @@ jobs:
             apk add --update --no-cache tar gzip ansible aws-cli
       - attach_workspace:
           at: ~/
+      - run:
+          name: Show Ip List
+          command: |
+            cd ~/project/.circleci/ansible
+            pwd && ls
+            cat ~/project/.circleci/ansible/inventory.txt
       - run:
           name: Configure server
           command: |
@@ -293,11 +294,11 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - run: 
+      - run:
           name: Show Ip List
           command: |
             cat ./roles/inventory.txt
-        
+
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["fb:b7:cc:21:25:3e:c4:fd:e3:74:b0:d2:ca:bf:da:03"]
