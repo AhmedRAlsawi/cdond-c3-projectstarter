@@ -210,7 +210,7 @@ jobs:
             echo TYPEORM_USERNAME=$TYPEORM_USERNAME >> backend/.env
             cat backend/.env
             cd .circleci/ansible
-            ansible-playbook -i inventory.txt configure-server.yml
+            ansible-playbook -i inventory.txt configure-server.yml -e "ansible_ssh_timeout=60"
       - persist_to_workspace:
           root: ~/
           paths:
@@ -286,6 +286,11 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
+      - run: 
+          name: Show Ip List
+          command: |
+            cat ./roles/inventory.txt
+        
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["fb:b7:cc:21:25:3e:c4:fd:e3:74:b0:d2:ca:bf:da:03"]
