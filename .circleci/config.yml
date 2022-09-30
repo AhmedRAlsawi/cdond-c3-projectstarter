@@ -28,23 +28,23 @@ commands:
   revert-migrations:
     description: Revert the last migration
     parameters:
-        workflow_id:
-            type: string      
+      workflow_id:
+        type: string
     steps:
-        - run:
-            name: Revert migrations
-            when: on_fail
-            command: |
-                
-                # Example: kvdb.io
-                SUCCESS=$(curl --insecure  https://kvdb.io/CUgBkFFD77XMw6ToPUG9Gq/migration_<< parameters.workflow_id >>)
-                # Logic for reverting the database state
-                if (( $SUCCESS == 1 ));
-                then
-                    cd ~/project/backend
-                    npm install
-                    npm run migration:revert
-                fi  
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+
+            # Example: kvdb.io
+            SUCCESS=$(curl --insecure  https://kvdb.io/CUgBkFFD77XMw6ToPUG9Gq/migration_<< parameters.workflow_id >>)
+            # Logic for reverting the database state
+            if (( $SUCCESS == 1 ));
+            then
+                cd ~/project/backend
+                npm install
+                npm run migration:revert
+            fi
 
 jobs:
   build-frontend:
@@ -239,7 +239,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0 
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
@@ -313,7 +313,7 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      
+
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["fb:b7:cc:21:25:3e:c4:fd:e3:74:b0:d2:ca:bf:da:03"]
@@ -326,7 +326,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
-      
+
       - run:
           name: Deploy backend
           command: |
@@ -357,7 +357,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache curl aws-cli nodejs npm
-      
+
       - run:
           name: Backend smoke test.
           command: |
@@ -369,7 +369,7 @@ jobs:
             # Fetch and prepare the BACKEND_IP env var
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
-            if curl "${API_URL}/api/status" | grep "ok"
+            if curl --connect-timeout 5 "${API_URL}/api/status" | grep "ok"
             then
                 return 0
             else
