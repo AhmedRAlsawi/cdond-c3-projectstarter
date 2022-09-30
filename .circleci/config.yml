@@ -270,10 +270,15 @@ jobs:
 
   deploy-frontend:
     docker:
-      - image: amazon/aws-cli
+      # - image: amazon/aws-cli
+      - image: python:3.9.0-alpine
     steps:
       # Checkout code from git
       - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
       - run:
           name: Install dependencies
           command: |
@@ -308,12 +313,12 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - run:
-          name: directory
-          command: |
-            pwd && ls
-            cd .circleci
-            cd ansible
+      # - run:
+      #     name: directory
+      #     command: |
+      #       pwd && ls
+      #       cd .circleci
+      #       cd ansible
       # - run:
       #     name: Show Ip List
       #     command: |
