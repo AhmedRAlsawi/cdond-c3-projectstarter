@@ -306,11 +306,13 @@ jobs:
           name: directory
           command: |
             pwd && ls
-      - run:
-          name: Show Ip List
-          command: |
-            # cat ./roles/inventory.txt
-            cat ~/project/.circleci/ansible/roles/inventory.txt
+            cd .circleci
+            cd ansible
+      # - run:
+      #     name: Show Ip List
+      #     command: |
+      #       # cat ./roles/inventory.txt
+      #       cat ~/project/.circleci/ansible/roles/inventory.txt
 
       # Add ssh keys with fingerprint
       - add_ssh_keys:
@@ -415,7 +417,7 @@ workflows:
           requires: [configure-infrastructure]
       - deploy-frontend:
           requires: [run-migrations]
-      - deploy-backend:
-          requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+      # - deploy-backend:
+      #     requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
