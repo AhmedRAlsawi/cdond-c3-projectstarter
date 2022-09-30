@@ -269,12 +269,11 @@ jobs:
       # Checkout code from git
       - checkout
       - attach_workspace:
-          at: .
+          at: ~/
       - run:
-          name: Install AWS CLI dependencies
-          working_directory: /tmp
+          name: Install dependencies
           command: |
-            sudo apt-get update && sudo apt-get install -yy less
+            apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
       - run:
           name: Get backend url
           command: |
@@ -304,9 +303,14 @@ jobs:
       # Checkout code from git
       - checkout
       - run:
+          name: directory
+          command: |
+            pwd && ls
+      - run:
           name: Show Ip List
           command: |
-            cat ./roles/inventory.txt
+            # cat ./roles/inventory.txt
+            cat ~/project/.circleci/ansible/roles/inventory.txt
 
       # Add ssh keys with fingerprint
       - add_ssh_keys:
@@ -325,11 +329,13 @@ jobs:
             npm i
             npm run build
             cd ..
+            # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt
             ansible-playbook -i inventory.txt deploy-backend.yml
+
       # Here's where you will add some code to rollback on failure
       - destroy_environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
