@@ -317,6 +317,8 @@ jobs:
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["fb:b7:cc:21:25:3e:c4:fd:e3:74:b0:d2:ca:bf:da:03"]
+      - restore_cache:
+          keys: [backend-build]
       # attach workspace
       - attach_workspace:
           at: ~/
@@ -324,8 +326,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
-      - restore_cache:
-          keys: [backend-build]
+      
       - run:
           name: Deploy backend
           command: |
