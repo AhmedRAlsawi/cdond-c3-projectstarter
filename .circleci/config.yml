@@ -313,18 +313,7 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      # - run:
-      #     name: directory
-      #     command: |
-      #       pwd && ls
-      #       cd .circleci
-      #       cd ansible
-      # - run:
-      #     name: Show Ip List
-      #     command: |
-      #       # cat ./roles/inventory.txt
-      #       cat ~/project/.circleci/ansible/roles/inventory.txt
-
+      
       # Add ssh keys with fingerprint
       - add_ssh_keys:
           fingerprints: ["fb:b7:cc:21:25:3e:c4:fd:e3:74:b0:d2:ca:bf:da:03"]
@@ -335,18 +324,20 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Deploy backend
           command: |
             cd backend
-            npm i
+            npm install
             npm run build
             cd ..
-            # Zip the directory
             tar -C backend -czvf artifact.tar.gz .
+            mkdir -p ~/project/.circleci/ansible/roles/deploy/files/
+            mv artifact.tar.gz .circleci/ansible/roles/deploy/files/artifact.tar.gz
             cd .circleci/ansible
-            echo "Contents  of the inventory.txt file is -------"
-            cat inventory.txt
+            echo "Contents of the inventory.txt file is ------$(cat inventory.txt)"
             ansible-playbook -i inventory.txt deploy-backend.yml
 
       # Here's where you will add some code to rollback on failure
@@ -418,7 +409,7 @@ workflows:
       #     requires: [build-backend]
       - deploy-infrastructure:
           # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-          requires: [build-frontend, build-backend]
+          # requires: [build-frontend, build-backend]
           filters:
             branches:
               only: [master]
@@ -426,8 +417,8 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
+      # - deploy-frontend:
+      #     requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
       # - smoke-test:
