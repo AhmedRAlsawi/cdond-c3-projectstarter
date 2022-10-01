@@ -453,9 +453,7 @@ jobs:
 
             # echo <<pipeline.parameters.workflow_id>>
             # export OldWorkflowID=<<pipeline.parameters.workflow_id>>
-            # export STACKS=$(aws cloudformation list-stacks \
-            # --query "StackSummaries[*].StackName" \
-            # --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            # 
             # Fetch the Old workflow ID
             export OldWorkflowID=$(aws cloudformation \
                     list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
@@ -463,18 +461,12 @@ jobs:
             echo OldWorkflowID: "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
             # Fetch the stack names          
-            export STACKS=$(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-                    --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
-            echo Stack names: "${STACKS[@]}"         
+            export STACKS=$(aws cloudformation list-stacks \
+            --query "StackSummaries[*].StackName" \
+            --stack-status-filter CREATE_COMPLETE --no-paginate --output text)
+            echo Stacknames: "${STACKS[@]}"         
 
-
-            # echo  $OldWorkflowID
-            # echo  $STACKS
-            # echo  ${STACKS[@]}
-            # echo  ${CIRCLE_WORKFLOW_ID:0:7}
-
-
-            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
+            if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
             then
               echo "----------Deleting stacks------------"
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
