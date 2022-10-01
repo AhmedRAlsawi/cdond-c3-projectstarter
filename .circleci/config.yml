@@ -474,7 +474,7 @@ jobs:
             # echo  ${CIRCLE_WORKFLOW_ID:0:7}
 
 
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "----------Deleting stacks------------"
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
