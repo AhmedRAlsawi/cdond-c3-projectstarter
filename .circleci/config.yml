@@ -459,6 +459,9 @@ jobs:
             
             echo  $OldWorkflowID
             echo  $STACKS
+            echo  "${STACKS[@]}"
+            echo  "${CIRCLE_WORKFLOW_ID:0:7}"
+
 
             # if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
             # then
