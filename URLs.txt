@@ -1,0 +1,10 @@
+URL01 :
+    https://github.com/AhmedRAlsawi/cdond-c3-projectstarter
+URL02 :
+    http://acs.amazonaws.com/groups/global/AllUsers
+URL03 :
+    d1gs36vi5voklz.cloudfront.net
+URL04 :
+    https://github.com/AhmedRAlsawi/cdond-c3-projectstarter
+URL05 :
+    http://ec2-52-90-199-244.compute-1.amazonaws.com:9090/service-discovery

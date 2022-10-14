@@ -472,9 +472,9 @@ jobs:
       - add_ssh_keys:
           fingerprints: ["fb:b7:cc:21:25:3e:c4:fd:e3:74:b0:d2:ca:bf:da:03"]
       - run:
-            name: Install tar utility
-            command: |
-              apk add tar gzip
+          name: Install tar utility
+          command: |
+            apk add tar gzip
       - run:
           name: Install dependencies
           command: |
@@ -486,7 +486,7 @@ jobs:
           command: |
             cd .circleci/ansible
             cat inventory.txt
-            ansible-playbook -i inventory.txt node-exporter.yml
+            ansible-playbook -i inventory.txt node_exporter.yml
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
