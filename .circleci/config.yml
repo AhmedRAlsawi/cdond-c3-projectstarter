@@ -37,7 +37,7 @@ commands:
           command: |
 
             # Example: kvdb.io
-            SUCCESS=$(curl --insecure  https://kvdb.io/CUgBkFFD77XMw6ToPUG9Gq/migration_<< parameters.workflow_id >>)
+            SUCCESS=$(curl --insecure  https://kvdb.io/PytsuWuK6MWf31mpZEKrL6/migration_<< parameters.workflow_id >>)
             # Logic for reverting the database state
             if (( $SUCCESS == 1 ));
             then
@@ -60,6 +60,7 @@ jobs:
             cd frontend
             npm install
             npm run build
+          no_output_timeout: 30m
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -77,6 +78,7 @@ jobs:
             cd backend
             npm install
             npm run build
+          no_output_timeout: 30m
 
       - save_cache:
           paths: [backend/node_modules]
@@ -95,6 +97,7 @@ jobs:
             cd frontend
             npm install
             npm run test
+          no_output_timeout: 30m
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -112,6 +115,7 @@ jobs:
             cd backend
             npm install
             npm run test
+          no_output_timeout: 30m
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -132,6 +136,7 @@ jobs:
             npm audit fix --audit-level=critical --force
             # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
             npm audit --audit-level=critical
+          no_output_timeout: 30m
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
@@ -152,6 +157,7 @@ jobs:
             npm audit fix --audit-level=critical --force
             # If the "npm audit fix" command above could not fix all critical vulnerabilities, try “npm audit fix --force” again
             # npm audit --audit-level=critical
+          no_output_timeout: 30m
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
@@ -167,17 +173,19 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
-              --tags project=your-tag \
+              --tags Project=Udapeople \
               --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+          no_output_timeout: 30m
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
-              --tags project=your-tag \
+              --tags Project=Udapeople \
               --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7} \
               --parameter-overrides ID=${CIRCLE_WORKFLOW_ID:0:7}
+          no_output_timeout: 30m
       - run:
           name: Add back-end ip to ansible inventory
           command: |
@@ -185,6 +193,7 @@ jobs:
             --query 'Reservations[*].Instances[*].PublicIpAddress' \
             --filters Name=tag:aws:cloudformation:stack-name,Values=udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} \
             --output text) >> ~/project/.circleci/ansible/inventory.txt
+          no_output_timeout: 30m
       - persist_to_workspace:
           root: ~/
           paths:
@@ -204,6 +213,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip ansible aws-cli
+          no_output_timeout: 30m
       - attach_workspace:
           at: ~/
       - run:
@@ -212,6 +222,7 @@ jobs:
             cd ~/project/.circleci/ansible
             pwd && ls
             cat ~/project/.circleci/ansible/inventory.txt
+          no_output_timeout: 30m
       - run:
           name: Configure server
           command: |
@@ -229,6 +240,8 @@ jobs:
             cat backend/.env
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml -e "ansible_ssh_timeout=60"
+          no_output_timeout: 30m
+
       - persist_to_workspace:
           root: ~/
           paths:
@@ -249,6 +262,7 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip -qq awscliv2.zip
             sudo ./aws/install
+          no_output_timeout: 30m
       - restore_cache:
           keys: [backend-build]
       - attach_workspace:
@@ -258,13 +272,15 @@ jobs:
           command: |
             cd backend
             npm run migrations >> migrations.txt
+          no_output_timeout: 30m
       - run:
           name: Send migration results to kvdb
           command: |
             if grep -q "success" ~/project/backend/migrations.txt
             then
-              curl --insecure https://kvdb.io/CUgBkFFD77XMw6ToPUG9Gq/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
+              curl --insecure https://kvdb.io/PytsuWuK6MWf31mpZEKrL6/migration_${CIRCLE_WORKFLOW_ID:0:7} -d '1'
             fi
+          no_output_timeout: 30m
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
 
@@ -278,10 +294,12 @@ jobs:
           name: Install tar utility
           command: |
             apk add tar gzip
+          no_output_timeout: 30m
       - run:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
+          no_output_timeout: 30m
       - restore_cache:
           keys: [frontend-build]
       - run:
@@ -292,6 +310,7 @@ jobs:
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
+          no_output_timeout: 30m
       - run:
           name: Deploy frontend objects
           command: |
@@ -300,6 +319,7 @@ jobs:
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+          no_output_timeout: 30m
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -325,6 +345,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
+          no_output_timeout: 30m
 
       - run:
           name: Deploy backend
@@ -339,6 +360,7 @@ jobs:
             cd .circleci/ansible
             echo "Contents of the inventory.txt file is ------$(cat inventory.txt)"
             ansible-playbook -i inventory.txt deploy-backend.yml
+          no_output_timeout: 30m
 
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -356,6 +378,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update --no-cache curl aws-cli nodejs npm
+          no_output_timeout: 30m
 
       - run:
           name: Backend smoke test.
@@ -374,6 +397,7 @@ jobs:
             else
                 return 0
             fi
+          no_output_timeout: 30m
       - run:
           name: Frontend smoke test.
           command: |
@@ -386,6 +410,7 @@ jobs:
             else
               return 1
             fi
+          no_output_timeout: 30m
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -405,6 +430,7 @@ jobs:
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip -qq awscliv2.zip
             sudo ./aws/install
+          no_output_timeout: 30m
       - run:
           name: Update cloudfront distribution
           command: |
@@ -418,10 +444,11 @@ jobs:
             --template-file .circleci/files/cloudfront.yml \
             --stack-name InitialStack \
             --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
-            --tags project=udapeople
+            --tags Project=Udapeople
 
             echo $OldWorkflowID >> ~/OldWorkflowID.txt
             cat ~/OldWorkflowID.txt
+          no_output_timeout: 30m
 
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
@@ -443,16 +470,18 @@ jobs:
           name: Install tar utility
           command: |
             apk add tar gzip
+          no_output_timeout: 30m
       - run:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
+          no_output_timeout: 30m
       - run:
           name: Get old stack workflow id and delete
           command: |
 
             export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
-            echo OldWorkflowID: "${OldWorkflowID}"
+            echo OldWorkflowID "${OldWorkflowID}"
             echo CIRCLE_WORKFLOW_ID "${CIRCLE_WORKFLOW_ID:0:7}"
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
@@ -464,6 +493,7 @@ jobs:
             else
               echo "Not Deleted"
             fi
+          no_output_timeout: 30m
   connect-prometheus:
     docker:
       - image: python:3.9.0-alpine
@@ -475,10 +505,12 @@ jobs:
           name: Install tar utility
           command: |
             apk add tar gzip
+          no_output_timeout: 30m
       - run:
           name: Install dependencies
           command: |
             apk add --update --no-cache tar gzip nodejs npm aws-cli ansible
+          no_output_timeout: 30m
       - attach_workspace:
           at: ~/
       - run:
@@ -487,6 +519,7 @@ jobs:
             cd .circleci/ansible
             cat inventory.txt
             ansible-playbook -i inventory.txt node_exporter.yml
+          no_output_timeout: 30m
       # Here's where you will add some code to rollback on failure
       - destroy-environment:
           workflow_id: ${CIRCLE_WORKFLOW_ID:0:7}
@@ -496,18 +529,18 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - scan-backend:
-          requires: [build-backend]
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - scan-backend:
+      #     requires: [build-backend]
       - deploy-infrastructure:
-          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
               only: [master]
@@ -517,10 +550,10 @@ workflows:
           requires: [connect-prometheus]
       - run-migrations:
           requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [run-migrations]
       - deploy-backend:
           requires: [run-migrations]
+      - deploy-frontend:
+          requires: [deploy-backend]
       - smoke-test:
           requires: [deploy-backend, deploy-frontend]
       - cloudfront-update:
