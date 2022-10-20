@@ -439,21 +439,20 @@ jobs:
             sudo ./aws/install
           no_output_timeout: 30m
       - run:
-          name: Delete Old Stack
+          name: Update cloudfront distribution
           command: |
             # your code here
-            aws cloudformation delete-stack \
-            --stack-name InitialStack
-          no_output_timeout: 30m
-      - run:
-          name: Create New Stack
-          command: |
-            # your code here
+            export OldWorkflowID=$(aws cloudformation list-exports \
+            --query "Exports[?Name==\`WorkflowID\`].Value" \
+            --no-paginate --output text)
+            echo $OldWorkflowID > ~/OldWorkflowID.txt
+            cat ~/OldWorkflowID.txt
             aws cloudformation deploy \
             --template-file .circleci/files/cloudfront.yml \
             --stack-name InitialStack \
             --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID:0:7} \
             --tags Project=Udapeople
+
           no_output_timeout: 30m
 
       # Here's where you will add some code to rollback on failure
