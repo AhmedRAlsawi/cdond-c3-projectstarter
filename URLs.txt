@@ -2,14 +2,17 @@ URL01 :
     Repo URL
     https://github.com/AhmedRAlsawi/cdond-c3-projectstarter
 URL02 :
+    #Updated
     Bucket URL
-    http://udapeople-79101ab.s3-website-us-east-1.amazonaws.com
+    http://udapeople-c6ebdc1.s3-website-us-east-1.amazonaws.com/#/employees
 URL03 :
+    #Updated
     Cloudfront URL
-    d1gs36vi5voklz.cloudfront.net	
-URL04 :
+    http://d3pj86p3oejzqq.cloudfront.net/#/employees	
+URL04 : 
+    #Updated
     Backend URL
-    http://ec2-3-89-120-210.compute-1.amazonaws.com:3030/api/status
+    http://ec2-52-70-132-186.compute-1.amazonaws.com:3030/api/status
 URL05 :
     Prometheus URL
     http://ec2-52-90-199-244.compute-1.amazonaws.com:9090/service-discovery
